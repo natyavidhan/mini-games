@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Cell:
     def __init__(self, index, x, y):
@@ -8,7 +9,7 @@ class Cell:
         self.widht = 10
         self.height = 10
         self.rect = pygame.Rect(self.x, self.y, self.widht, self.height)
-        self.typ = 0 # 0 = dead, 1 = alive
+        self.alive = False
 
 class Game:
     def __init__(self):
@@ -23,6 +24,16 @@ class Game:
             for x in range(75):
                 self.grid[y].append(Cell(index, x, y))
                 index+=1
+    
+    def update(self):
+        for y in self.grid:
+            for x in y:
+                r = x.rect
+                if x.alive:
+                    pygame.draw.rect(self.screen, (255, 255, 255), r)
+                else:
+                    pygame.draw.rect(self.screen, (0, 0, 0), r)
+        pygame.display.update()
 
     def run(self):
         while self.running:
@@ -34,20 +45,14 @@ class Game:
 
             if pygame.mouse.get_pressed()[0]:
                 coord = pygame.mouse.get_pos()
-                x = coord[0] - coord[0] % 10
-                x = coord[1] - coord[1] % 10
-                print(x, y)
-
-            for y in self.grid:
-                for x in y:
-                    r = x.rect
-                    if x.typ == 0:
-                        pygame.draw.rect(self.screen, (0, 0, 0), r)
-                    else:
-                        pygame.draw.rect(self.screen, (255, 255, 255), r)
+                x = coord[0] // 10
+                y = coord[1] // 10
+                self.grid[y][x].alive = not self.grid[y][x].alive
+                self.update()
+                time.sleep(0.5)
 
             self.clock.tick(60)
-            pygame.display.update()
+            self.update()
 
 if __name__ == "__main__":
     game = Game()
