@@ -38,6 +38,7 @@ class Game:
         self.scene = 'home'
 
         self.speed = 10
+        self.score = [0, 0]
         
         self.player_1 = Paddle()
         self.player_2 = Paddle(False)
@@ -64,13 +65,34 @@ class Game:
         self.player_2 = Paddle(False)
         self.ball = Ball()
         self.win = [False, None]
+        self.score = [0, 0]
+
+    def show_score(self):
+        font = pygame.font.SysFont("comicsans", 25)
+        
+        p1_s = font.render(f"P1 Score {self.score[0]}", True, (114, 115, 53))
+        p1_s_rect = p1_s.get_rect()
+        p1_s_rect.y = 550-p1_s_rect.height
+        
+        p2_s = font.render(f"P1 Score {self.score[1]}", True, (114, 115, 53))
+        p2_s_rect = p2_s.get_rect()
+        p2_s_rect.y = 550-p2_s_rect.height
+        p2_s_rect.x = 750 - p2_s_rect.width
+
+        self.screen.blit(p1_s, p1_s_rect)
+        self.screen.blit(p2_s, p2_s_rect)
 
     def ball_sim(self):
         new_x = self.ball.x + self.ball.xVel
         new_y = self.ball.y + self.ball.yVel
-        if self.player_1.rect.collidepoint(new_x, new_y) or self.player_2.rect.collidepoint(new_x, new_y):
+
+        if self.player_1.rect.collidepoint(new_x, new_y):
             self.ball.xVel *= -1
-            
+            self.score[0] += 1
+        if self.player_2.rect.collidepoint(new_x, new_y):
+            self.ball.xVel *= -1
+            self.score[1] += 1
+
         if  new_y > 550 or new_y < 0:
             self.ball.yVel *= -1
             new_y += self.ball.yVel
@@ -121,6 +143,7 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 self.scene = 'home'
+        self.show_score()
                 
     def player_vs_cpu(self):
         self.screen.blit(pygame.image.load("playground.png"), (0, 0))
@@ -159,6 +182,7 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 self.scene = 'home'
+        self.show_score()
 
     def run(self):
         while self.running:
