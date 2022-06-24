@@ -11,6 +11,20 @@ class Paddle:
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+class Ball:
+    def __init__(self):
+        self.radius = 5
+        self.x = 375 - self.radius
+        self.y = 275 - self.radius
+
+        self.xVel = 15
+        self.yVel = 15
+
+        self.rect = pygame.Rect(self.x, self.y, self.radius*2, self.radius*2)
+    
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.radius*2, self.radius*2)
+
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((750, 550))
@@ -25,6 +39,7 @@ class Game:
         
         self.player_1 = Paddle()
         self.player_2 = Paddle(False)
+        self.ball = Ball()
 
     def home(self):
         img = pygame.image.load("home.png")
