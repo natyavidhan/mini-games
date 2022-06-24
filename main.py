@@ -1,6 +1,9 @@
 import pygame
 import time
 
+pygame.init()
+pygame.font.init()
+
 class Cell:
     def __init__(self, index, x, y, alive=False):
         self.index = index
@@ -13,7 +16,7 @@ class Cell:
 
 class Game:
     def __init__(self):
-        self.screen = pygame.display.set_mode((750, 550))
+        self.screen = pygame.display.set_mode((750, 600))
         pygame.display.set_caption("Game of Life")
         self.running = True
         self.clock = pygame.time.Clock()
@@ -30,6 +33,34 @@ class Game:
                 index+=1
         return grid
 
+    def display_info(self):
+        surface = pygame.Surface((750, 50))
+        surface.fill((0, 0, 0))
+
+        pygame.draw.line(surface, (255, 255, 255), (0, 0), (750, 0), 5)
+
+        font = pygame.font.SysFont("comicsans", 20)
+        instruction_1 = font.render("Press Space to Start Simulation", True, (255, 255, 255))
+        instruction_2 = font.render("Press Right key to simulate next step", True, (255, 255, 255))
+
+        ins_rect_1 = instruction_1.get_rect()
+        ins_rect_1.x, ins_rect_1.y = 10, 3
+
+        ins_rect_2 = instruction_2.get_rect()
+        ins_rect_2.x, ins_rect_2.y = 10, 20
+
+        surface.blit(instruction_1, ins_rect_1)
+        surface.blit(instruction_2, ins_rect_2)
+
+        pygame.draw.line(surface, (255, 255, 255), (375, 0), (375, 50), 2)
+        sim = "Running" if self.simulate else "Paused"
+
+        sim_text = pygame.font.SysFont("comicsans", 32).render(f"Simulation: {sim}", True, (255, 255, 255))
+        sim_text_rect = sim_text.get_rect()
+        sim_text_rect.x, sim_text_rect.y = 385, 3
+        surface.blit(sim_text, sim_text_rect)
+
+        self.screen.blit(surface, (0, 550))
 
     def update(self):
         for y in self.grid:
@@ -79,8 +110,6 @@ class Game:
                     elif event.key == pygame.K_RIGHT:
                         self.simulation()
                         time.sleep(0.2)
-        
-            self.screen.fill((0, 0, 0))
 
             if pygame.mouse.get_pressed()[0]:
                 coord = pygame.mouse.get_pos()
@@ -90,6 +119,7 @@ class Game:
                 self.update()
                 time.sleep(0.2)
 
+            self.display_info()
             self.clock.tick(30)
             self.update()
             if self.simulate:
