@@ -57,6 +57,7 @@ class Game:
                 self.restart()
             if btn_2.collidepoint(pygame.mouse.get_pos()):
                 self.scene = 'pvc'
+                self.restart()
     
     def restart(self):
         self.player_1 = Paddle()
@@ -76,6 +77,7 @@ class Game:
 
         self.ball.x = new_x
         self.ball.y = new_y
+        self.ball.update()
 
         pygame.draw.circle(self.screen, (114, 115, 53), (self.ball.x, self.ball.y), self.ball.radius)
 
@@ -119,6 +121,44 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 self.scene = 'home'
+                
+    def player_vs_cpu(self):
+        self.screen.blit(pygame.image.load("playground.png"), (0, 0))
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w] and self.player_1.y-self.speed >= 0:
+            self.player_1.y-=self.speed
+        if keys[pygame.K_s] and self.player_1.y+self.speed+self.player_1.height <= 550:
+            self.player_1.y+=self.speed
+        if self.ball.y < 500 and self.ball.y > 50:
+            self.player_2.y=self.ball.y-50
+
+        self.player_1.update()
+        self.player_2.update()
+        self.ball_sim()
+
+        pygame.draw.rect(self.screen, (114, 115, 53), self.player_1.rect)
+        pygame.draw.rect(self.screen, (114, 115, 53), self.player_2.rect)
+
+        if self.ball.x < 0:
+            self.win = [True, 1]
+
+        if self.ball.x > 750:
+            self.win = [True, 0]
+        
+        if self.win[0]:
+            self.screen.fill((194, 219, 117))
+            text = pygame.font.SysFont("comicsans", 45).render(f"Player {self.win[1]+1} Won!", True, (114, 115, 53))
+            text2 = pygame.font.SysFont("comicsans", 25).render(f"Press Space To Go Back", True, (114, 115, 53))
+            text_rect = text.get_rect()
+            text_rect.center = 750/2, 550/2
+            text_rect2 = text.get_rect()
+            text_rect2.center = 750/2, 325
+            self.screen.blit(text, text_rect)
+            self.screen.blit(text2, text_rect2)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                self.scene = 'home'
 
     def run(self):
         while self.running:
@@ -130,6 +170,8 @@ class Game:
                 self.home()
             if self.scene == 'pvp':
                 self.player_vs_player()
+            if self.scene == 'pvc':
+                self.player_vs_cpu()
             self.clock.tick(60)
             pygame.display.update()
 
